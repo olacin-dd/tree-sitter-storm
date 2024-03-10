@@ -1,0 +1,25 @@
+{
+  "name": "tree-sitter-storm",
+  "version": "0.0.1",
+  "description": "Storm grammar for tree-sitter",
+  "main": "bindings/node",
+  "keywords": [
+    "parser",
+    "lexer",
+    "storm"
+  ],
+  "author": "Nicolas Picard",
+  "license": "MIT",
+  "dependencies": {
+    "nan": "^2.19.0"
+  },
+  "devDependencies": {
+    "tree-sitter-cli": "^0.21.0"
+  },
+  "scripts": {
+    "build": "tree-sitter generate && node-gyp build",
+    "lint": "eslint grammar.js",
+    "parse": "tree-sitter parse",
+    "test": "tree-sitter test"
+  }
+}
