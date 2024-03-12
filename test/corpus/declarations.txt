@@ -1,0 +1,13 @@
+===
+Variables declarations
+===
+
+$string = mystring
+$ipv4 = 8.8.8.8
+$fqdn = :fqdn
+
+---
+
+(program
+  (identifier)
+)
