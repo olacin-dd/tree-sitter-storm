@@ -1,60 +1,28 @@
 [
   {
-    "type": "assignment",
+    "type": "DOUBLEQUOTEDSTRING",
     "named": true,
-    "fields": {
-      "left": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "identifier",
-            "named": true
-          }
-        ]
-      },
-      "right": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "function_call",
-            "named": true
-          },
-          {
-            "type": "function_declaration",
-            "named": true
-          },
-          {
-            "type": "identifier",
-            "named": true
-          }
-        ]
-      }
-    }
+    "fields": {}
   },
   {
-    "type": "block",
+    "type": "SINGLEQUOTEDSTRING",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "VARTOKN",
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": false,
       "types": [
         {
-          "type": "assignment",
+          "type": "DOUBLEQUOTEDSTRING",
           "named": true
         },
         {
-          "type": "function_call",
-          "named": true
-        },
-        {
-          "type": "function_declaration",
-          "named": true
-        },
-        {
-          "type": "identifier",
+          "type": "SINGLEQUOTEDSTRING",
           "named": true
         }
       ]
@@ -77,58 +45,23 @@
     }
   },
   {
-    "type": "double_quoted_string",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "function_call",
+    "type": "funcarg",
     "named": true,
     "fields": {
-      "arguments": {
-        "multiple": true,
-        "required": true,
-        "types": [
-          {
-            "type": "(",
-            "named": false
-          },
-          {
-            "type": ")",
-            "named": false
-          },
-          {
-            "type": ",",
-            "named": false
-          },
-          {
-            "type": "deref",
-            "named": true
-          }
-        ]
-      },
-      "function": {
+      "default_value": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
-            "type": "deref",
+            "type": "DOUBLEQUOTEDSTRING",
             "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "function_declaration",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": true,
-        "types": [
+          },
           {
-            "type": "block",
+            "type": "SINGLEQUOTEDSTRING",
+            "named": true
+          },
+          {
+            "type": "TRIPLEQUOTEDSTRING",
             "named": true
           }
         ]
@@ -138,21 +71,26 @@
         "required": true,
         "types": [
           {
-            "type": "identifier",
-            "named": true
-          }
-        ]
-      },
-      "parameters": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "parameters",
+            "type": "VARTOKN",
             "named": true
           }
         ]
       }
+    }
+  },
+  {
+    "type": "funcargs",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "funcarg",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -171,7 +109,34 @@
     }
   },
   {
-    "type": "parameters",
+    "type": "opervarlist",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "DOUBLEQUOTEDSTRING",
+          "named": true
+        },
+        {
+          "type": "SINGLEQUOTEDSTRING",
+          "named": true
+        },
+        {
+          "type": "TRIPLEQUOTEDSTRING",
+          "named": true
+        },
+        {
+          "type": "varlist",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "query",
     "named": true,
     "fields": {},
     "children": {
@@ -179,51 +144,82 @@
       "required": false,
       "types": [
         {
-          "type": "function_call",
+          "type": "opervarlist",
           "named": true
         },
         {
-          "type": "function_declaration",
+          "type": "setvar",
           "named": true
         },
         {
-          "type": "identifier",
+          "type": "stormfunc",
           "named": true
         }
       ]
     }
   },
   {
-    "type": "program",
+    "type": "setvar",
     "named": true,
     "fields": {},
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
         {
-          "type": "assignment",
+          "type": "DOUBLEQUOTEDSTRING",
           "named": true
         },
         {
-          "type": "function_call",
+          "type": "SINGLEQUOTEDSTRING",
           "named": true
         },
         {
-          "type": "function_declaration",
+          "type": "TRIPLEQUOTEDSTRING",
           "named": true
         },
         {
-          "type": "identifier",
+          "type": "VARTOKN",
           "named": true
         }
       ]
     }
   },
   {
-    "type": "single_quoted_string",
+    "type": "stormfunc",
     "named": true,
-    "fields": {}
+    "fields": {
+      "arguments": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "funcargs",
+            "named": true
+          }
+        ]
+      },
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "VARTOKN",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "query",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "string",
@@ -234,11 +230,64 @@
       "required": true,
       "types": [
         {
-          "type": "double_quoted_string",
+          "type": "DOUBLEQUOTEDSTRING",
           "named": true
         },
         {
-          "type": "single_quoted_string",
+          "type": "SINGLEQUOTEDSTRING",
+          "named": true
+        },
+        {
+          "type": "TRIPLEQUOTEDSTRING",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "vareval",
+    "named": false,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "varvalue",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "varlist",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "VARTOKN",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "varvalue",
+    "named": false,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "DOUBLEQUOTEDSTRING",
+          "named": true
+        },
+        {
+          "type": "SINGLEQUOTEDSTRING",
           "named": true
         }
       ]
@@ -273,15 +322,35 @@
     "named": false
   },
   {
+    "type": "TRIPLEQUOTEDSTRING",
+    "named": true
+  },
+  {
+    "type": "`",
+    "named": false
+  },
+  {
     "type": "comment",
     "named": true
+  },
+  {
+    "type": "emit",
+    "named": false
   },
   {
     "type": "function",
     "named": false
   },
   {
+    "type": "return",
+    "named": false
+  },
+  {
     "type": "{",
+    "named": false
+  },
+  {
+    "type": "|",
     "named": false
   },
   {
