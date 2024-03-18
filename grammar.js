@@ -63,7 +63,8 @@ module.exports = grammar({
       $.initblock,
       $.opervarlist,
       $.setitem,
-      $.setvar,
+      // $.setvar,
+      $.var_declaration,
       $.break,
       $.continue,
       $.return,
@@ -80,7 +81,7 @@ module.exports = grammar({
     emit: ($) => seq('emit', $._valu),
 
     // A variable assignment
-    setvar: ($) => seq('$', $.VARTOKN, '=', $._valu),
+    var_declaration: $ => seq('$', field('name', $.identifier), '=', field('value', $._valu)),
     setitem: ($) => seq(
       '$',
       $._varvaluatom, '.', choice(
@@ -107,17 +108,25 @@ module.exports = grammar({
     TRIPLEQUOTEDSTRING: (_) => /'''.*?'''/,
     DOUBLEQUOTEDSTRING: (_) => seq('"', repeat(/[^\"]/), '"'),
     SINGLEQUOTEDSTRING: (_) => seq('\'', repeat(/[^\']/), '\''),
-    string: ($) => choice($.DOUBLEQUOTEDSTRING, $.SINGLEQUOTEDSTRING, $.TRIPLEQUOTEDSTRING),
+    string: ($) => choice(
+      $.DOUBLEQUOTEDSTRING,
+      $.SINGLEQUOTEDSTRING,
+      $.TRIPLEQUOTEDSTRING,
+      $.formatstring,
+    ),
 
-    // FORMATTEXT: (_) => /[^`{].*?(?<!\\)(\\\\)*?(?=[`{])/s,
-    // _formatexpr: ($) => seq('{', $.expror, '}'),
+    interpolation: $ => seq(
+      '{',
+      /\w+/,
+      '}'
+    ),
+
     formatstring: ($) => seq(
       '`',
       repeat(
         choice(
-          // $.FORMATTEXT,
-          /\w+/,
-          // $._formatexpr,
+          (/[^`]/),
+          $.interpolation,
         ),
       ),
       '`',
@@ -133,10 +142,10 @@ module.exports = grammar({
         field('default_value', $._valu),
       ),
     ),
-    funcargs: ($) => seq('(', optional($.funcarg), repeat(seq(',', $.funcarg)), ')'),
+    funcargs: ($) => seq('(', commaSep($.funcarg), ')'),
     stormfunc: ($) => seq(
       'function',
-      field('name', $.VARTOKN),
+      field('name', $.identifier),
       field('arguments', $.funcargs),
       '{',
       optional($.query),
@@ -145,7 +154,8 @@ module.exports = grammar({
 
     identifier: ($) => choice(
       /\w+/,
-      $.string,
+      $.DOUBLEQUOTEDSTRING,
+      $.SINGLEQUOTEDSTRING,
     ),
 
     stormcmd: ($) => seq(
@@ -239,6 +249,8 @@ module.exports = grammar({
     varvalue: ($) => alias($.VARTOKN, 'varvalue'),
     VARTOKN: ($) => choice(/\w+/, $.DOUBLEQUOTEDSTRING, $.SINGLEQUOTEDSTRING),
 
+
+
     // funccall: ($) => seq($._varvaluatom, token.immediate($._callargs)),
     // _callarg: ($) => choice(
     //   $._valu,
@@ -257,9 +269,7 @@ module.exports = grammar({
     // ),
 
     _rootvalu: ($) => choice(
-      $.TRIPLEQUOTEDSTRING,
-      $.DOUBLEQUOTEDSTRING,
-      $.SINGLEQUOTEDSTRING,
+      $.string,
     ),
 
     // Common subset + stuff allowable in command arguments
@@ -286,3 +296,11 @@ module.exports = grammar({
 
   },
 });
+
+function commaSep1(rule) {
+  return seq(rule, repeat(seq(',', rule)));
+}
+
+function commaSep(rule) {
+  return optional(commaSep1(rule));
+}

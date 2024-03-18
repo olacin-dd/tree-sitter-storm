@@ -1,9 +1,10 @@
 init {
   // init statement
   $x = "abcd"
+  $y = `hello {world}`
 }
 
-function hellowolrd() { 
+function hellowolrd(arg1, arg2) { 
   // function statement
   //
   $x = "abcd"

@@ -240,7 +240,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "setvar"
+          "name": "var_declaration"
         },
         {
           "type": "SYMBOL",
@@ -322,7 +322,7 @@
         }
       ]
     },
-    "setvar": {
+    "var_declaration": {
       "type": "SEQ",
       "members": [
         {
@@ -330,16 +330,24 @@
           "value": "$"
         },
         {
-          "type": "SYMBOL",
-          "name": "VARTOKN"
+          "type": "FIELD",
+          "name": "name",
+          "content": {
+            "type": "SYMBOL",
+            "name": "identifier"
+          }
         },
         {
           "type": "STRING",
           "value": "="
         },
         {
-          "type": "SYMBOL",
-          "name": "_valu"
+          "type": "FIELD",
+          "name": "value",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_valu"
+          }
         }
       ]
     },
@@ -530,6 +538,27 @@
         {
           "type": "SYMBOL",
           "name": "TRIPLEQUOTEDSTRING"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "formatstring"
+        }
+      ]
+    },
+    "interpolation": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "{"
+        },
+        {
+          "type": "PATTERN",
+          "value": "\\w+"
+        },
+        {
+          "type": "STRING",
+          "value": "}"
         }
       ]
     },
@@ -547,7 +576,11 @@
             "members": [
               {
                 "type": "PATTERN",
-                "value": "\\w+"
+                "value": "[^`]"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "interpolation"
               }
             ]
           }
@@ -610,29 +643,34 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "SYMBOL",
-              "name": "funcarg"
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "funcarg"
+                },
+                {
+                  "type": "REPEAT",
+                  "content": {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "STRING",
+                        "value": ","
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "funcarg"
+                      }
+                    ]
+                  }
+                }
+              ]
             },
             {
               "type": "BLANK"
             }
           ]
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "STRING",
-                "value": ","
-              },
-              {
-                "type": "SYMBOL",
-                "name": "funcarg"
-              }
-            ]
-          }
         },
         {
           "type": "STRING",
@@ -652,7 +690,7 @@
           "name": "name",
           "content": {
             "type": "SYMBOL",
-            "name": "VARTOKN"
+            "name": "identifier"
           }
         },
         {
@@ -694,7 +732,11 @@
         },
         {
           "type": "SYMBOL",
-          "name": "string"
+          "name": "DOUBLEQUOTEDSTRING"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "SINGLEQUOTEDSTRING"
         }
       ]
     },
@@ -1054,15 +1096,7 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "TRIPLEQUOTEDSTRING"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "DOUBLEQUOTEDSTRING"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "SINGLEQUOTEDSTRING"
+          "name": "string"
         }
       ]
     },
@@ -1143,4 +1177,3 @@
   "inline": [],
   "supertypes": []
 }
-
