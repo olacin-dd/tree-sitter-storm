@@ -27,19 +27,81 @@ module.exports = grammar({
       $._querystart,
     ),
 
+    _statement: ($) => seq(choice($._oper, $._editblock), optional('|')),
+
     _querystart: ($) => choice(
-      repeat1(seq(choice($._oper), optional('|'))),
+      repeat1(seq(choice($._oper, $._editblock), optional('|'))),
       // choice($._oper),
     ),
 
-    // A single edit operation
-    // _editblock: $ => seq(
-    //   "[",
-    // $._editoper,
-    // "]"
-    // ),
+    // Edit block: zero or more edit operations inside a single set of square brackets
+    _editblock: ($) => seq('[', repeat($._editoper), ']'),
 
-    // _editoper: $ => $.editnodeadd,
+    // A single edit operation
+    _editoper: ($) => choice(
+      $.edittagadd,
+      $.edittagdel,
+    ),
+
+    edittagadd: ($) => seq(
+      '+',
+      optional($.SETTAGOPER),
+      field('name', $.tagname),
+      optional($._valu),
+    ),
+    edittagdel: ($) => seq('-', field('name', $.tagname)),
+
+    MODSET: (_) => choice('+=', '-='),
+    TRYSETPLUS: (_) => '?+=',
+    TRYSETMINUS: (_) => '?-=',
+    TRYSET: (_) => '?=',
+    SETTAGOPER: (_) => '?',
+
+    // The set of non-edit non-commands in storm
+    _oper: ($) => choice(
+      $.stormfunc,
+      $.initblock,
+      $.opervarlist,
+      $.setitem,
+      $.setvar,
+      $.break,
+      $.continue,
+      $.return,
+      $.emit,
+      $.stop,
+      $.ifstmt,
+    ),
+
+    break: (_) => 'break',
+    continue: (_) => 'continue',
+
+    stop: (_) => 'stop',
+    return: ($) => seq('return', '(', optional($._valu), ')'),
+    emit: ($) => seq('emit', $._valu),
+
+    // A variable assignment
+    setvar: ($) => seq('$', $.VARTOKN, '=', $._valu),
+    setitem: ($) => seq(
+      '$',
+      $._varvaluatom, '.', choice(
+        $.VARTOKN,
+        seq('$', $.varvalue),
+        // $.formatstring,
+        // $._derefexpr,
+      ),
+      $._valu,
+    ),
+
+    baresubquery: ($) => seq('{', $._querystart, '}'),
+
+    tagname: ($) => seq('#', choice($._varvalu, $._tagsegs)),
+    _tagsegs: ($) => seq($.TAGSEGNOVAR, repeat(
+      seq('.', choice(
+        $.TAGSEGNOVAR,
+        seq('$', $.varvalue),
+      )),
+    )),
+    TAGSEGNOVAR: (_) => /[\w]+/,
 
 
     TRIPLEQUOTEDSTRING: (_) => /'''.*?'''/,
@@ -60,6 +122,7 @@ module.exports = grammar({
       ),
       '`',
     ),
+
 
     // Function definitions
     funcarg: ($) => choice(
@@ -85,43 +148,42 @@ module.exports = grammar({
       $.string,
     ),
 
+    stormcmd: ($) => seq(
+      $.CMDNAME,
+      // optional($.stormcmdargs)
+    ),
+    // stormcmdargs: ($) => repeat($._stormcmdarg),
+    // _stormcmdarg: ($) => repeat($._stormcmdarg),
+
+    CMDNAME: ($) => choice(
+      'init',
+      'empty',
+      'fini',
+      'function',
+      'return',
+      'emit',
+      'stop',
+      'yield',
+      'break',
+      'continue',
+      'for',
+      'while',
+      'switch',
+      'else',
+      'elif',
+      'if',
+      'not',
+      'or',
+      'and',
+      'try',
+      'catch',
+      'as',
+      'reverse',
+    ),
+
 
     dot: (_) => '.',
 
-
-    deref: ($) => seq(
-      '$',
-      field('name', $.identifier),
-    ),
-
-    function_call: ($) => seq(
-      field('function', $.deref),
-      field('arguments', $._call_args),
-    ),
-    _call_args: ($) => seq(
-      '(',
-      optional(
-        seq(
-          $.deref,
-          repeat(seq(',', $.deref)),
-        ),
-      ),
-      ')',
-    ),
-
-    // _parameters: ($) => seq(
-    //   $._expression,
-    //   repeat(seq(',', $._expression)),
-    // ),
-    //
-    // parameters: ($) => seq('(', optional($._parameters), ')'),
-    //
-    // function_declaration: ($) => prec.right(1, seq(
-    //   'function',
-    //   field('name', $.identifier),
-    //   field('parameters', $.parameters),
-    //   field('body', $.block),
-    // )),
 
     // http://stackoverflow.com/questions/13014947/regex-to-match-a-c-style-multiline-comment/36328890#36328890
     comment: (_) => token(choice(
@@ -133,35 +195,24 @@ module.exports = grammar({
       ),
     )),
 
-    try_set: (_) => '?=',
-
-    // The set of non-edit non-commands in storm
-    _oper: ($) => choice(
-      $.stormfunc,
-      $.setvar,
-      $.opervarlist,
-    ),
-
-
-    break: (_) => 'break',
-    continue: (_) => 'continue',
-
-    return: ($) => seq(
-      'return',
-      '(',
-      // TODO: add optional(value)
-      ')',
-    ),
-    emit: ($) => seq(
-      'emit',
-      // TODO: add value
-    ),
 
     // A bare variable reference, useful for a function call
     vareval: ($) => alias($._varvalu, 'vareval'),
 
-    // A variable assignment
-    setvar: ($) => seq('$', $.VARTOKN, '=', $._valu),
+    initblock: ($) => seq('init', '{', repeat($._statement), '}'),
+
+
+    ifstmt: ($) => seq(
+      'if',
+      $.ifclause,
+      repeat(seq(
+        'elif',
+        $.ifclause,
+      )),
+      optional(seq('else', $.baresubquery)),
+    ),
+    ifclause: ($) => seq($._valu, $.baresubquery),
+
 
     // A bare variable list
     varlist: ($) => seq('(', seq('$', $.VARTOKN), repeat(seq('$', $.VARTOKN)), ')'),
@@ -169,11 +220,6 @@ module.exports = grammar({
     // A variable list assignment
     opervarlist: ($) => seq($.varlist, '=', $._valu),
 
-    VARTOKN: ($) => choice(
-      /\w+/,
-      $.DOUBLEQUOTEDSTRING,
-      $.SINGLEQUOTEDSTRING,
-    ),
 
     // embedquery: $ => seq(
     //   $._EMBEDQUERYSTART,
@@ -191,6 +237,7 @@ module.exports = grammar({
       // $.funccall,
     ),
     varvalue: ($) => alias($.VARTOKN, 'varvalue'),
+    VARTOKN: ($) => choice(/\w+/, $.DOUBLEQUOTEDSTRING, $.SINGLEQUOTEDSTRING),
 
     // funccall: ($) => seq($._varvaluatom, token.immediate($._callargs)),
     // _callarg: ($) => choice(
@@ -224,18 +271,18 @@ module.exports = grammar({
     // Used for most instances of values
     _basevalu: ($) => choice(
       $._argvalu,
-      // $.baresubquery,
+      $.baresubquery,
     ),
     _valu: ($) => choice(
       $._basevalu,
       // $.NONQUOTEWORD,
     ),
-    //
-    // bool: _ => choice("true", "false"),
-    // null: _ => "null",
-    // not: _ => "not",
-    // or: _ => "or",
-    // and: _ => "and",
+
+    bool: (_) => choice('true', 'false'),
+    null: (_) => 'null',
+    not: (_) => 'not',
+    or: (_) => 'or',
+    and: (_) => 'and',
 
   },
 });

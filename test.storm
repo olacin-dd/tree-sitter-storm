@@ -1,3 +1,13 @@
-function myFunction() {  }
-function myFunction(foo) {  }
-function myFunction(bar, baz=$lib.null) {  }
+init {
+  // init statement
+  $x = "abcd"
+}
+
+function hellowolrd() { 
+  // function statement
+  //
+  $x = "abcd"
+  return(hello)
+}
+
+init { } 
