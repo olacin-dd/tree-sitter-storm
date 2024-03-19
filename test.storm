@@ -1,14 +1,3 @@
-init {
-  // init statement
-  $x = "abcd"
-  $y = `hello {world}`
-}
+$x = "hello"
 
-function hellowolrd(arg1, arg2) { 
-  // function statement
-  //
-  $x = "abcd"
-  return(hello)
-}
-
-init { } 
+($x, $y) = ("hello", "world")

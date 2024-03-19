@@ -18,21 +18,19 @@ module.exports = grammar({
     $.comment,
   ],
 
-  // word: ($) => $._word,
-
   rules: {
-    // Entry point for an unadorned storm query
-    query: ($) => choice(
-      seq('|', optional($._querystart)),
-      $._querystart,
+    source_file: $ => repeat($._statement),
+
+    _statement: ($) => choice(
+      $._simple_statement,
     ),
 
-    _statement: ($) => seq(choice($._oper, $._editblock), optional('|')),
+    // Simple statements
+    _simple_statement: $ => seq(
 
-    _querystart: ($) => choice(
-      repeat1(seq(choice($._oper, $._editblock), optional('|'))),
-      // choice($._oper),
+      // TODO: do from scratch
     ),
+
 
     // Edit block: zero or more edit operations inside a single set of square brackets
     _editblock: ($) => seq('[', repeat($._editoper), ']'),
@@ -61,10 +59,8 @@ module.exports = grammar({
     _oper: ($) => choice(
       $.stormfunc,
       $.initblock,
-      $.opervarlist,
+      // $.opervarlist,
       $.setitem,
-      // $.setvar,
-      $.var_declaration,
       $.break,
       $.continue,
       $.return,
@@ -77,11 +73,9 @@ module.exports = grammar({
     continue: (_) => 'continue',
 
     stop: (_) => 'stop',
-    return: ($) => seq('return', '(', optional($._valu), ')'),
+    return: ($) => seq('return', '(', optional($._expression), ')'),
     emit: ($) => seq('emit', $._valu),
 
-    // A variable assignment
-    var_declaration: $ => seq('$', field('name', $.identifier), '=', field('value', $._valu)),
     setitem: ($) => seq(
       '$',
       $._varvaluatom, '.', choice(
@@ -93,7 +87,24 @@ module.exports = grammar({
       $._valu,
     ),
 
-    baresubquery: ($) => seq('{', $._querystart, '}'),
+    // A variable assignment
+    _single_var_declaration: $ => seq('$', field('name', $.identifier), '=', field('value', $._valu)),
+    // A bare variable list
+    _multi_var_declaration: ($) => seq('(', commaSep1(seq('$', field('name', $.identifier))), ')',
+      '=',
+      '(',
+      commaSep1($._expression),
+      ')'
+    ),
+    // Assignment
+    var_declaration: $ => choice(
+      $._single_var_declaration,
+      $._multi_var_declaration,
+    ),
+
+    // A variable list assignment
+    // opervarlist: ($) => seq($.varlist, '=', $._valu),
+
 
     tagname: ($) => seq('#', choice($._varvalu, $._tagsegs)),
     _tagsegs: ($) => seq($.TAGSEGNOVAR, repeat(
@@ -132,12 +143,23 @@ module.exports = grammar({
       '`',
     ),
 
+    _expression: $ => choice(
+      $.var_declaration,
+      $.call_expression,
+      $.identifier,
+      // $.string
+    ),
+
+    expression_statement: $ => $._expression,
+
+    block: $ => seq('{', repeat($._statement), '}'),
+
 
     // Function definitions
     funcarg: ($) => choice(
-      field('name', $.VARTOKN),
+      field('name', $.identifier),
       seq(
-        field('name', $.VARTOKN),
+        field('name', $.identifier),
         token.immediate('='),
         field('default_value', $._valu),
       ),
@@ -147,23 +169,23 @@ module.exports = grammar({
       'function',
       field('name', $.identifier),
       field('arguments', $.funcargs),
-      '{',
-      optional($.query),
-      '}',
+      $.block,
+    ),
+
+    // Function calls
+    argument_list: $ => seq('(', optional(seq(commaSep($._expression))), ')'),
+    call_expression: $ => seq(
+      '$',
+      field('target', $.identifier),
+      field('args', $.argument_list),
     ),
 
     identifier: ($) => choice(
       /\w+/,
-      $.DOUBLEQUOTEDSTRING,
-      $.SINGLEQUOTEDSTRING,
+      // $.DOUBLEQUOTEDSTRING,
+      // $.SINGLEQUOTEDSTRING,
     ),
 
-    stormcmd: ($) => seq(
-      $.CMDNAME,
-      // optional($.stormcmdargs)
-    ),
-    // stormcmdargs: ($) => repeat($._stormcmdarg),
-    // _stormcmdarg: ($) => repeat($._stormcmdarg),
 
     CMDNAME: ($) => choice(
       'init',
@@ -191,10 +213,6 @@ module.exports = grammar({
       'reverse',
     ),
 
-
-    dot: (_) => '.',
-
-
     // http://stackoverflow.com/questions/13014947/regex-to-match-a-c-style-multiline-comment/36328890#36328890
     comment: (_) => token(choice(
       seq('//', /.*/),
@@ -209,36 +227,26 @@ module.exports = grammar({
     // A bare variable reference, useful for a function call
     vareval: ($) => alias($._varvalu, 'vareval'),
 
-    initblock: ($) => seq('init', '{', repeat($._statement), '}'),
+    // Control Flow
 
+    // https://synapse.docs.vertex.link/en/latest/synapse/userguides/storm_adv_control.html#init-block
+    initblock: ($) => seq('init', $.block),
+    // https://synapse.docs.vertex.link/en/latest/synapse/userguides/storm_adv_control.html#fini-block
+    finiblock: ($) => seq('fini', $.block),
+    // https://synapse.docs.vertex.link/en/latest/synapse/userguides/storm_adv_control.html#empty-block
+    emptyblock: ($) => seq('empty', $.block),
 
-    ifstmt: ($) => seq(
+    // https://synapse.docs.vertex.link/en/latest/synapse/userguides/storm_adv_control.html#if-else-statement
+    if_statement: $ => seq(
       'if',
-      $.ifclause,
-      repeat(seq(
-        'elif',
-        $.ifclause,
-      )),
-      optional(seq('else', $.baresubquery)),
+      field('condition', $._expression),
+      field('consequence', $.block),
+      repeat(field('alternative', $.elif_clause)),
+      optional(field('alternative', $.else_clause))
     ),
-    ifclause: ($) => seq($._valu, $.baresubquery),
+    elif_clause: $ => seq('elif', field('condition', $._expression), field('consequence', $.block)),
+    else_clause: $ => seq('else', field('consequence', $.block)),
 
-
-    // A bare variable list
-    varlist: ($) => seq('(', seq('$', $.VARTOKN), repeat(seq('$', $.VARTOKN)), ')'),
-
-    // A variable list assignment
-    opervarlist: ($) => seq($.varlist, '=', $._valu),
-
-
-    // embedquery: $ => seq(
-    //   $._EMBEDQUERYSTART,
-    //   $.query,
-    //   "}"
-    // ),
-    // _EMBEDQUERYSTART: _ => "${",
-    //
-    // NONQUOTEWORD: (_) => /(?!\/\/)[\w\-\+\?\*\/\\][^\s\),=\]}\|]*(?=$|[\s\),\]}\|\=])/,
 
     // A value consisting of a name then 0 or more derefs and function calls
     _varvalu: ($) => seq('$', $._varvaluatom),
@@ -248,25 +256,6 @@ module.exports = grammar({
     ),
     varvalue: ($) => alias($.VARTOKN, 'varvalue'),
     VARTOKN: ($) => choice(/\w+/, $.DOUBLEQUOTEDSTRING, $.SINGLEQUOTEDSTRING),
-
-
-
-    // funccall: ($) => seq($._varvaluatom, token.immediate($._callargs)),
-    // _callarg: ($) => choice(
-    //   $._valu,
-    //   $.VARTOKN,
-    //   seq(
-    //     $.VARTOKN,
-    //     $._valu,
-    //   ),
-    // ),
-    // // funcargs: ($) => seq('(', optional($.funcarg), repeat(seq(',', $.funcarg)), ')'),
-    // _callargs: ($) => seq(
-    //   '(',
-    //   optional($._callarg),
-    //   repeat(seq(',', $._callarg)),
-    //   ')',
-    // ),
 
     _rootvalu: ($) => choice(
       $.string,
@@ -288,8 +277,11 @@ module.exports = grammar({
       // $.NONQUOTEWORD,
     ),
 
-    bool: (_) => choice('true', 'false'),
-    null: (_) => 'null',
+    bool: ($) => choice($.true, $.false),
+    true: (_) => choice('true', '$lib.true'),
+    false: (_) => choice('false', '$lib.false'),
+    null: (_) => choice('null', '$lib.null'),
+
     not: (_) => 'not',
     or: (_) => 'or',
     and: (_) => 'and',

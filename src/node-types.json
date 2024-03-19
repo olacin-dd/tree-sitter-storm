@@ -1,10 +1,5 @@
 [
   {
-    "type": "CMDNAME",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "DOUBLEQUOTEDSTRING",
     "named": true,
     "fields": {}
@@ -28,6 +23,29 @@
         },
         {
           "type": "SINGLEQUOTEDSTRING",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "argument_list",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "call_expression",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "var_declaration",
           "named": true
         }
       ]
@@ -70,10 +88,6 @@
           "named": true
         },
         {
-          "type": "opervarlist",
-          "named": true
-        },
-        {
           "type": "return",
           "named": true
         },
@@ -88,9 +102,24 @@
         {
           "type": "stormfunc",
           "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "block",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "expression_statement",
+          "named": true
         },
         {
-          "type": "var_declaration",
+          "type": "stormfunc",
           "named": true
         }
       ]
@@ -100,6 +129,32 @@
     "type": "break",
     "named": true,
     "fields": {}
+  },
+  {
+    "type": "call_expression",
+    "named": true,
+    "fields": {
+      "args": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "argument_list",
+            "named": true
+          }
+        ]
+      },
+      "target": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      }
+    }
   },
   {
     "type": "continue",
@@ -176,6 +231,34 @@
     }
   },
   {
+    "type": "expression_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "call_expression",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "var_declaration",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "false",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "formatstring",
     "named": true,
     "fields": {},
@@ -213,7 +296,7 @@
         "required": true,
         "types": [
           {
-            "type": "VARTOKN",
+            "type": "identifier",
             "named": true
           }
         ]
@@ -238,21 +321,7 @@
   {
     "type": "identifier",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "DOUBLEQUOTEDSTRING",
-          "named": true
-        },
-        {
-          "type": "SINGLEQUOTEDSTRING",
-          "named": true
-        }
-      ]
-    }
+    "fields": {}
   },
   {
     "type": "ifclause",
@@ -297,59 +366,11 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
-      "required": false,
+      "multiple": false,
+      "required": true,
       "types": [
         {
-          "type": "break",
-          "named": true
-        },
-        {
-          "type": "continue",
-          "named": true
-        },
-        {
-          "type": "edittagadd",
-          "named": true
-        },
-        {
-          "type": "edittagdel",
-          "named": true
-        },
-        {
-          "type": "emit",
-          "named": true
-        },
-        {
-          "type": "ifstmt",
-          "named": true
-        },
-        {
-          "type": "initblock",
-          "named": true
-        },
-        {
-          "type": "opervarlist",
-          "named": true
-        },
-        {
-          "type": "return",
-          "named": true
-        },
-        {
-          "type": "setitem",
-          "named": true
-        },
-        {
-          "type": "stop",
-          "named": true
-        },
-        {
-          "type": "stormfunc",
-          "named": true
-        },
-        {
-          "type": "var_declaration",
+          "type": "block",
           "named": true
         }
       ]
@@ -361,92 +382,6 @@
     "fields": {}
   },
   {
-    "type": "opervarlist",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "baresubquery",
-          "named": true
-        },
-        {
-          "type": "string",
-          "named": true
-        },
-        {
-          "type": "varlist",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "query",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "break",
-          "named": true
-        },
-        {
-          "type": "continue",
-          "named": true
-        },
-        {
-          "type": "edittagadd",
-          "named": true
-        },
-        {
-          "type": "edittagdel",
-          "named": true
-        },
-        {
-          "type": "emit",
-          "named": true
-        },
-        {
-          "type": "ifstmt",
-          "named": true
-        },
-        {
-          "type": "initblock",
-          "named": true
-        },
-        {
-          "type": "opervarlist",
-          "named": true
-        },
-        {
-          "type": "return",
-          "named": true
-        },
-        {
-          "type": "setitem",
-          "named": true
-        },
-        {
-          "type": "stop",
-          "named": true
-        },
-        {
-          "type": "stormfunc",
-          "named": true
-        },
-        {
-          "type": "var_declaration",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "return",
     "named": true,
     "fields": {},
@@ -455,11 +390,15 @@
       "required": false,
       "types": [
         {
-          "type": "baresubquery",
+          "type": "call_expression",
           "named": true
         },
         {
-          "type": "string",
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "var_declaration",
           "named": true
         }
       ]
@@ -487,6 +426,25 @@
         },
         {
           "type": "varvalue",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "source_file",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "expression_statement",
+          "named": true
+        },
+        {
+          "type": "stormfunc",
           "named": true
         }
       ]
@@ -524,10 +482,10 @@
     },
     "children": {
       "multiple": false,
-      "required": false,
+      "required": true,
       "types": [
         {
-          "type": "query",
+          "type": "block",
           "named": true
         }
       ]
@@ -580,11 +538,16 @@
     }
   },
   {
+    "type": "true",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "var_declaration",
     "named": true,
     "fields": {
       "name": {
-        "multiple": false,
+        "multiple": true,
         "required": true,
         "types": [
           {
@@ -595,7 +558,7 @@
       },
       "value": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "baresubquery",
@@ -607,6 +570,24 @@
           }
         ]
       }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "call_expression",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "var_declaration",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -619,21 +600,6 @@
       "types": [
         {
           "type": "varvalue",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "varlist",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "VARTOKN",
           "named": true
         }
       ]
@@ -668,6 +634,18 @@
   },
   {
     "type": "$",
+    "named": false
+  },
+  {
+    "type": "$lib.false",
+    "named": false
+  },
+  {
+    "type": "$lib.null",
+    "named": false
+  },
+  {
+    "type": "$lib.true",
     "named": false
   },
   {
@@ -800,6 +778,10 @@
   },
   {
     "type": "not",
+    "named": false
+  },
+  {
+    "type": "null",
     "named": false
   },
   {
