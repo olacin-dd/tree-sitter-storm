@@ -1,3 +1,7 @@
-$x = "hello"
+$lib.import("core/strings")
 
-($x, $y) = ("hello", "world")
+$string = mystring
+$ipv4 = "8.8.8.8"
+$number = 123
+$fqdn = :fqdn
+$out = $myFunction()

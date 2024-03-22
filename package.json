@@ -23,5 +23,14 @@
     "lint": "eslint grammar.js",
     "parse": "tree-sitter parse",
     "test": "tree-sitter test"
-  }
+  },
+  "tree-sitter": [
+    {
+      "scope": "source.storm",
+      "file-types": [
+        "storm"
+      ],
+      "highlights": "queries/highlights.scm"
+    }
+  ]
 }

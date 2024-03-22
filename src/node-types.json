@@ -10,26 +10,30 @@
     "fields": {}
   },
   {
-    "type": "VARTOKN",
+    "type": "argument",
     "named": true,
     "fields": {},
     "children": {
       "multiple": false,
-      "required": false,
+      "required": true,
       "types": [
         {
-          "type": "DOUBLEQUOTEDSTRING",
+          "type": "keyword_argument",
           "named": true
         },
         {
-          "type": "SINGLEQUOTEDSTRING",
+          "type": "string",
+          "named": true
+        },
+        {
+          "type": "variable",
           "named": true
         }
       ]
     }
   },
   {
-    "type": "argument_list",
+    "type": "arguments",
     "named": true,
     "fields": {},
     "children": {
@@ -37,73 +41,40 @@
       "required": false,
       "types": [
         {
-          "type": "call_expression",
-          "named": true
-        },
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "var_declaration",
+          "type": "argument",
           "named": true
         }
       ]
     }
   },
   {
-    "type": "baresubquery",
+    "type": "attribute_reference",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "break",
-          "named": true
-        },
-        {
-          "type": "continue",
-          "named": true
-        },
-        {
-          "type": "edittagadd",
-          "named": true
-        },
-        {
-          "type": "edittagdel",
-          "named": true
-        },
-        {
-          "type": "emit",
-          "named": true
-        },
-        {
-          "type": "ifstmt",
-          "named": true
-        },
-        {
-          "type": "initblock",
-          "named": true
-        },
-        {
-          "type": "return",
-          "named": true
-        },
-        {
-          "type": "setitem",
-          "named": true
-        },
-        {
-          "type": "stop",
-          "named": true
-        },
-        {
-          "type": "stormfunc",
-          "named": true
-        }
-      ]
+    "fields": {
+      "attribute": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "object": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "attribute_reference",
+            "named": true
+          },
+          {
+            "type": "variable",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -116,115 +87,6 @@
       "types": [
         {
           "type": "expression_statement",
-          "named": true
-        },
-        {
-          "type": "stormfunc",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "break",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "call_expression",
-    "named": true,
-    "fields": {
-      "args": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "argument_list",
-            "named": true
-          }
-        ]
-      },
-      "target": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "identifier",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "continue",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "edittagadd",
-    "named": true,
-    "fields": {
-      "name": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "tagname",
-            "named": true
-          }
-        ]
-      }
-    },
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "SETTAGOPER",
-          "named": true
-        },
-        {
-          "type": "baresubquery",
-          "named": true
-        },
-        {
-          "type": "string",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "edittagdel",
-    "named": true,
-    "fields": {
-      "name": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "tagname",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "emit",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "baresubquery",
-          "named": true
-        },
-        {
-          "type": "string",
           "named": true
         }
       ]
@@ -239,24 +101,23 @@
       "required": true,
       "types": [
         {
-          "type": "call_expression",
+          "type": "function_call",
           "named": true
         },
         {
-          "type": "identifier",
+          "type": "literal",
           "named": true
         },
         {
-          "type": "var_declaration",
+          "type": "variable",
+          "named": true
+        },
+        {
+          "type": "variable_assignment",
           "named": true
         }
       ]
     }
-  },
-  {
-    "type": "false",
-    "named": true,
-    "fields": {}
   },
   {
     "type": "formatstring",
@@ -274,19 +135,15 @@
     }
   },
   {
-    "type": "funcarg",
+    "type": "function_call",
     "named": true,
     "fields": {
-      "default_value": {
+      "args": {
         "multiple": false,
-        "required": false,
+        "required": true,
         "types": [
           {
-            "type": "baresubquery",
-            "named": true
-          },
-          {
-            "type": "string",
+            "type": "arguments",
             "named": true
           }
         ]
@@ -296,26 +153,15 @@
         "required": true,
         "types": [
           {
-            "type": "identifier",
+            "type": "attribute_reference",
+            "named": true
+          },
+          {
+            "type": "variable",
             "named": true
           }
         ]
       }
-    }
-  },
-  {
-    "type": "funcargs",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "funcarg",
-          "named": true
-        }
-      ]
     }
   },
   {
@@ -324,108 +170,66 @@
     "fields": {}
   },
   {
-    "type": "ifclause",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "baresubquery",
-          "named": true
-        },
-        {
-          "type": "string",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "ifstmt",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "baresubquery",
-          "named": true
-        },
-        {
-          "type": "ifclause",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "initblock",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "block",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "interpolation",
     "named": true,
     "fields": {}
   },
   {
-    "type": "return",
+    "type": "keyword_argument",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "value": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "function_call",
+            "named": true
+          },
+          {
+            "type": "literal",
+            "named": true
+          },
+          {
+            "type": "variable",
+            "named": true
+          },
+          {
+            "type": "variable_assignment",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "literal",
     "named": true,
     "fields": {},
     "children": {
       "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "call_expression",
-          "named": true
-        },
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "var_declaration",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "setitem",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
       "required": true,
       "types": [
         {
-          "type": "VARTOKN",
+          "type": "float",
           "named": true
         },
         {
-          "type": "baresubquery",
+          "type": "integer",
           "named": true
         },
         {
           "type": "string",
-          "named": true
-        },
-        {
-          "type": "varvalue",
           "named": true
         }
       ]
@@ -441,51 +245,6 @@
       "types": [
         {
           "type": "expression_statement",
-          "named": true
-        },
-        {
-          "type": "stormfunc",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "stop",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "stormfunc",
-    "named": true,
-    "fields": {
-      "arguments": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "funcargs",
-            "named": true
-          }
-        ]
-      },
-      "name": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "identifier",
-            "named": true
-          }
-        ]
-      }
-    },
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "block",
           "named": true
         }
       ]
@@ -519,35 +278,11 @@
     }
   },
   {
-    "type": "tagname",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "TAGSEGNOVAR",
-          "named": true
-        },
-        {
-          "type": "varvalue",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "true",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "var_declaration",
+    "type": "variable",
     "named": true,
     "fields": {
       "name": {
-        "multiple": true,
+        "multiple": false,
         "required": true,
         "types": [
           {
@@ -555,70 +290,42 @@
             "named": true
           }
         ]
-      },
+      }
+    }
+  },
+  {
+    "type": "variable_assignment",
+    "named": true,
+    "fields": {
       "value": {
         "multiple": false,
-        "required": false,
+        "required": true,
         "types": [
           {
-            "type": "baresubquery",
+            "type": "function_call",
             "named": true
           },
           {
-            "type": "string",
+            "type": "literal",
+            "named": true
+          },
+          {
+            "type": "variable",
+            "named": true
+          },
+          {
+            "type": "variable_assignment",
             "named": true
           }
         ]
       }
     },
     "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "call_expression",
-          "named": true
-        },
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "var_declaration",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "vareval",
-    "named": false,
-    "fields": {},
-    "children": {
       "multiple": false,
       "required": true,
       "types": [
         {
-          "type": "varvalue",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "varvalue",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "DOUBLEQUOTEDSTRING",
-          "named": true
-        },
-        {
-          "type": "SINGLEQUOTEDSTRING",
+          "type": "variable",
           "named": true
         }
       ]
@@ -629,23 +336,7 @@
     "named": false
   },
   {
-    "type": "#",
-    "named": false
-  },
-  {
     "type": "$",
-    "named": false
-  },
-  {
-    "type": "$lib.false",
-    "named": false
-  },
-  {
-    "type": "$lib.null",
-    "named": false
-  },
-  {
-    "type": "$lib.true",
     "named": false
   },
   {
@@ -661,23 +352,7 @@
     "named": false
   },
   {
-    "type": "+",
-    "named": false
-  },
-  {
-    "type": "+=",
-    "named": false
-  },
-  {
     "type": ",",
-    "named": false
-  },
-  {
-    "type": "-",
-    "named": false
-  },
-  {
-    "type": "-=",
     "named": false
   },
   {
@@ -689,43 +364,11 @@
     "named": false
   },
   {
-    "type": "SETTAGOPER",
-    "named": true
-  },
-  {
-    "type": "TAGSEGNOVAR",
-    "named": true
-  },
-  {
     "type": "TRIPLEQUOTEDSTRING",
     "named": true
   },
   {
-    "type": "[",
-    "named": false
-  },
-  {
-    "type": "]",
-    "named": false
-  },
-  {
     "type": "`",
-    "named": false
-  },
-  {
-    "type": "and",
-    "named": false
-  },
-  {
-    "type": "as",
-    "named": false
-  },
-  {
-    "type": "break",
-    "named": false
-  },
-  {
-    "type": "catch",
     "named": false
   },
   {
@@ -733,27 +376,7 @@
     "named": true
   },
   {
-    "type": "continue",
-    "named": false
-  },
-  {
-    "type": "elif",
-    "named": false
-  },
-  {
-    "type": "else",
-    "named": false
-  },
-  {
-    "type": "emit",
-    "named": false
-  },
-  {
     "type": "empty",
-    "named": false
-  },
-  {
-    "type": "false",
     "named": false
   },
   {
@@ -761,71 +384,19 @@
     "named": false
   },
   {
-    "type": "for",
-    "named": false
-  },
-  {
-    "type": "function",
-    "named": false
-  },
-  {
-    "type": "if",
-    "named": false
+    "type": "float",
+    "named": true
   },
   {
     "type": "init",
     "named": false
   },
   {
-    "type": "not",
-    "named": false
-  },
-  {
-    "type": "null",
-    "named": false
-  },
-  {
-    "type": "or",
-    "named": false
-  },
-  {
-    "type": "return",
-    "named": false
-  },
-  {
-    "type": "reverse",
-    "named": false
-  },
-  {
-    "type": "stop",
-    "named": false
-  },
-  {
-    "type": "switch",
-    "named": false
-  },
-  {
-    "type": "true",
-    "named": false
-  },
-  {
-    "type": "try",
-    "named": false
-  },
-  {
-    "type": "while",
-    "named": false
-  },
-  {
-    "type": "yield",
-    "named": false
+    "type": "integer",
+    "named": true
   },
   {
     "type": "{",
-    "named": false
-  },
-  {
-    "type": "|",
     "named": false
   },
   {

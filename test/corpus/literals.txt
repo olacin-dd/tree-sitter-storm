@@ -30,17 +30,50 @@ function getFooByBar(bar) {
           (comment))))
 
 ================================================================================
-Function call
+Function calls
 ================================================================================
 
-$getFooByBar()
-$getFooByBar($x, $y)
+$myFunction()
+$myFunction(foo)
+$myFunction($foo)
+$myFunction(bar, baz=wheee)
 
 --------------------------------------------------------------------------------
 
-(comment)
-(comment)
-
+(source_file
+    (expression_statement
+      (function_call
+        (variable
+          (identifier))
+        (arguments)))
+    (expression_statement
+      (function_call
+        (variable
+          (identifier))
+        (arguments
+          (argument
+            (string
+              (identifier))))))
+    (expression_statement
+      (function_call
+        (variable
+          (identifier))
+        (arguments
+          (argument
+            (variable
+              (identifier))))))
+    (expression_statement
+      (function_call
+        (variable
+          (identifier))
+        (arguments
+          (argument
+            (string
+              (identifier)))
+          (argument
+            (keyword_argument
+              (identifier)
+              (identifier)))))))
 
 ================================================================================
 String literals
