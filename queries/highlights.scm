@@ -15,10 +15,10 @@
 ; ; Builtin functions
 (function_call 
   name: (attribute_reference 
-    object: (variable) @highlight
-    attribute: (identifier) @function.builtin
+    object: (variable) @module
+    attribute: (identifier) @function.call
     )
-  (#eq? @highlight "$lib")
+  (#eq? @module "$lib")
 )
 
 ; [
