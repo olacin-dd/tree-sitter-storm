@@ -23,18 +23,29 @@ module.exports = grammar({
 
     _statement: ($) => choice(
       $._simple_statement,
+      $._compound_statement,
     ),
 
     // Simple statements
     _simple_statement: ($) => choice(
       $.expression_statement,
+      $.variable_assignment,
+      $.return_statement,
+      $.emit_statement,
+      $.break_statement,
+      $.continue_statement,
+    ),
+
+    // Compound statements
+    _compound_statement: ($) => choice(
+      $.function_definition,
     ),
 
     expression_statement: ($) => $._expression,
     _expression: ($) => choice(
-      $.variable_assignment,
       $.variable,
       $.function_call,
+      $.selector_expression,
       // TODO: check for literal which does not look like string
       // $.identifier,
       $.literal,
@@ -45,11 +56,16 @@ module.exports = grammar({
     identifier: (_) => /\w+/,
     variable: ($) => seq('$', field('name', $.identifier)),
 
-    attribute_reference: ($) => seq(
-      field('object', choice($.variable, $.attribute_reference)),
+    selector_expression: ($) => seq(
+      field('object', $._expression),
       token.immediate('.'),
       field('attribute', $.identifier),
     ),
+    // attribute_reference: ($) => seq(
+    //   field('object', choice($.variable, $.attribute_reference)),
+    //   token.immediate('.'),
+    //   field('attribute', $.identifier),
+    // ),
 
     // Function calls
     keyword_argument: ($) => seq(
@@ -60,7 +76,7 @@ module.exports = grammar({
     argument: ($) => choice($.variable, $.string, $.keyword_argument),
     arguments: ($) => seq(token.immediate('('), commaSep($.argument), ')'),
     function_call: ($) => seq(
-      field('name', choice($.variable, $.attribute_reference)),
+      field('name', $._expression),
       field('args', $.arguments),
     ),
 
@@ -72,6 +88,27 @@ module.exports = grammar({
       $.string,
       $.integer,
       $.float,
+    ),
+
+    return_statement: ($) => seq('return', token.immediate('('), optional($._expression), ')'),
+    emit_statement: ($) => seq('emit', $._expression),
+    break_statement: (_) => prec.left('break'),
+    continue_statement: (_) => prec.left('continue'),
+
+    // Function definitions
+    funcarg: ($) => seq(
+      field('name', $.identifier),
+      optional(seq(
+        token.immediate('='),
+        field('default_value', $._expression),
+      )),
+    ),
+    funcargs: ($) => seq(token.immediate('('), commaSep($.funcarg), ')'),
+    function_definition: ($) => seq(
+      'function',
+      field('name', $.identifier),
+      field('arguments', $.funcargs),
+      $.block,
     ),
 
 
@@ -112,12 +149,7 @@ module.exports = grammar({
     //   // $.ifstmt,
     // ),
 
-    break: (_) => 'break',
-    continue: (_) => 'continue',
-
     stop: (_) => 'stop',
-    // return: ($) => seq('return', '(', optional($._expression), ')'),
-    // emit: ($) => seq('emit', $._valu),
 
     // setitem: ($) => seq(
     //   '$',
@@ -188,24 +220,6 @@ module.exports = grammar({
     ),
 
     block: ($) => seq('{', repeat($._statement), '}'),
-
-
-    // Function definitions
-    // funcarg: ($) => choice(
-    //   field('name', $.identifier),
-    //   seq(
-    //     field('name', $.identifier),
-    //     token.immediate('='),
-    //     field('default_value', $._valu),
-    //   ),
-    // ),
-    // funcargs: ($) => seq('(', commaSep($.funcarg), ')'),
-    // stormfunc: ($) => seq(
-    //   'function',
-    //   field('name', $.identifier),
-    //   field('arguments', $.funcargs),
-    //   $.block,
-    // ),
 
 
     // http://stackoverflow.com/questions/13014947/regex-to-match-a-c-style-multiline-comment/36328890#36328890

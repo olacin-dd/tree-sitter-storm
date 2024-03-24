@@ -1,7 +1,15 @@
 $lib.import("core/strings")
 
-$string = mystring
+$lib.axon.has("asdlfjas")
+
+function myFunction() {
+    break
+    continue
+    return($node)
+}
+
+// $string = mystring
 $ipv4 = "8.8.8.8"
 $number = 123
-$fqdn = :fqdn
+// $fqdn = :fqdn
 $out = $myFunction()

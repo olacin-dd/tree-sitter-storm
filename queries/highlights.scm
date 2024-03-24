@@ -1,54 +1,66 @@
 (variable) @variable
 
+; Global variables
+(variable
+   name: (identifier) @variable.builtin
+  (#any-of? @variable.builtin
+    "lib"
+    "node"
+    "path"
+    "tag"
+    "rows"
+))
+
 (string) @string
 (integer) @number
 (float) @number.float
 
-(argument) @variable.parameter
 ; Function definitions
-; (function_declaration name: (identifier) @function)
+(function_definition
+  name: (identifier) @function)
 
 ; ; Function calls
 (function_call
-    name: (variable) @function.call)
-;
-; ; Builtin functions
-(function_call 
-  name: (attribute_reference 
-    object: (variable) @module
-    attribute: (identifier) @function.call
-    )
-  (#eq? @module "$lib")
+  name: (variable) @function.call)
+
+(argument) @variable.parameter
+
+; Builtin functions
+; (function_call 
+;   name: (attribute_reference 
+;     object: (variable) @module
+;     attribute: (identifier) @function.call
+;     )
+;   (#eq? @module "$lib")
+; )
+(function_call
+  name: (selector_expression
+    attribute: (identifier) @function.method
+  )
 )
 
-; [
-;   "not"
-;   "or"
-;   "and"
-; ] @operator
+; Operators
 
-; [
-;   "init"
-;   "empty"
-;   "fini"
-;   "function"
-;   "return"
-;   "emit"
-;   "stop"
-;   "yield"
-;   "break"
-;   "continue"
-;   "for"
-;   "while"
-;   "switch"
-;   "else"
-;   "elif"
-;   "if"
-;   "try"
-;   "catch"
-;   "as"
-;   "reverse"
-; ] @keyword
+[
+  "$"
+] @operator
+
+; Keywords
+
+[
+ "function"
+] @keyword.function
+
+[
+  "return"
+] @keyword.return
+
+; Loop-related keywords
+
+[
+  "break"
+  "continue"
+] @keyword.repeat
 
 ; ["(" ")" "{" "}" "[" "]"] @punctuation.bracket
 
