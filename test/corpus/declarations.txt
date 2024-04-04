@@ -2,9 +2,16 @@
 Variables declarations
 ================================================================================
 
+// Unquoted string variable
 $string = mystring
-$ipv4 = 8.8.8.8
+// Quoted string variable
+$ipv4 = "8.8.8.8"
+// Number variable
+$number = (123)
+// Relative prop variable
 $fqdn = :fqdn
+// Function call output variable
+$out = $myFunction()
 
 ---
 

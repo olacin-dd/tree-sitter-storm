@@ -1,3 +1,11 @@
-$x = "hello"
+init {
+  $lib.base64.decode("dGVzdA==")
+  empty { $lib.print("test") }
+  | spin |
+  yield $node
+  divert $lib.true $genSomething("hello")
+}
 
-($x, $y) = ("hello", "world")
+fini {
+  $lib.import("hel")
+}
