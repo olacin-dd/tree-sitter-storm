@@ -47,6 +47,18 @@
         {
           "type": "SYMBOL",
           "name": "continue_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "yield_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "divert_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "spin_statement"
         }
       ]
     },
@@ -56,6 +68,18 @@
         {
           "type": "SYMBOL",
           "name": "function_definition"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "initblock"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "finiblock"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "emptyblock"
         }
       ]
     },
@@ -475,11 +499,31 @@
       "type": "STRING",
       "value": "stop"
     },
-    "TRIPLEQUOTEDSTRING": {
-      "type": "PATTERN",
-      "value": "'''.*?'''"
+    "_triple_quoted_string": {
+      "type": "PREC",
+      "value": 1,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "'''"
+          },
+          {
+            "type": "REPEAT",
+            "content": {
+              "type": "PATTERN",
+              "value": "[^\\']"
+            }
+          },
+          {
+            "type": "STRING",
+            "value": "'''"
+          }
+        ]
+      }
     },
-    "DOUBLEQUOTEDSTRING": {
+    "_double_quoted_string": {
       "type": "SEQ",
       "members": [
         {
@@ -489,8 +533,17 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "PATTERN",
-            "value": "[^\\\"]"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "PATTERN",
+                "value": "[^\\\"]"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "escape_sequence"
+              }
+            ]
           }
         },
         {
@@ -499,7 +552,7 @@
         }
       ]
     },
-    "SINGLEQUOTEDSTRING": {
+    "_single_quoted_string": {
       "type": "SEQ",
       "members": [
         {
@@ -524,21 +577,70 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "DOUBLEQUOTEDSTRING"
+          "name": "_double_quoted_string"
         },
         {
           "type": "SYMBOL",
-          "name": "SINGLEQUOTEDSTRING"
+          "name": "_single_quoted_string"
         },
         {
           "type": "SYMBOL",
-          "name": "TRIPLEQUOTEDSTRING"
+          "name": "_triple_quoted_string"
         },
         {
           "type": "SYMBOL",
-          "name": "formatstring"
+          "name": "_formatstring"
         }
       ]
+    },
+    "escape_sequence": {
+      "type": "IMMEDIATE_TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 1,
+        "content": {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "\\"
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "PATTERN",
+                  "value": "u[a-fA-F\\d]{4}"
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "U[a-fA-F\\d]{8}"
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "x[a-fA-F\\d]{2}"
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "\\d{3}"
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "\\r?\\n"
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "['\"abfrntv\\\\]"
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "N\\{[^}]+\\}"
+                }
+              ]
+            }
+          ]
+        }
+      }
     },
     "interpolation": {
       "type": "SEQ",
@@ -548,8 +650,21 @@
           "value": "{"
         },
         {
-          "type": "PATTERN",
-          "value": "\\w+"
+          "type": "FIELD",
+          "name": "expression",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "identifier"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "_expression"
+              }
+            ]
+          }
         },
         {
           "type": "STRING",
@@ -557,7 +672,7 @@
         }
       ]
     },
-    "formatstring": {
+    "_formatstring": {
       "type": "SEQ",
       "members": [
         {
@@ -682,6 +797,48 @@
           "name": "block"
         }
       ]
+    },
+    "spin_statement": {
+      "type": "STRING",
+      "value": "spin"
+    },
+    "yield_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "yield"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_expression"
+        }
+      ]
+    },
+    "divert_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "divert"
+        },
+        {
+          "type": "FIELD",
+          "name": "cond",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_expression"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "genr",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_expression"
+          }
+        }
+      ]
     }
   },
   "extras": [
@@ -700,4 +857,3 @@
   "inline": [],
   "supertypes": []
 }
-

@@ -1,15 +1,11 @@
-$lib.import("core/strings")
-
-$lib.axon.has("asdlfjas")
-
-function myFunction() {
-    break
-    continue
-    return($node)
+init {
+  $lib.base64.decode("dGVzdA==")
+  empty { $lib.print("test") }
+  | spin |
+  yield $node
+  divert $lib.true $genSomething("hello")
 }
 
-// $string = mystring
-$ipv4 = "8.8.8.8"
-$number = 123
-// $fqdn = :fqdn
-$out = $myFunction()
+fini {
+  $lib.import("hel")
+}

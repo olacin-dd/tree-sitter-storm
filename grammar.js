@@ -34,11 +34,17 @@ module.exports = grammar({
       $.emit_statement,
       $.break_statement,
       $.continue_statement,
+      $.yield_statement,
+      $.divert_statement,
+      $.spin_statement,
     ),
 
     // Compound statements
     _compound_statement: ($) => choice(
       $.function_definition,
+      $.initblock,
+      $.finiblock,
+      $.emptyblock,
     ),
 
     expression_statement: ($) => $._expression,
@@ -191,24 +197,52 @@ module.exports = grammar({
     // TAGSEGNOVAR: (_) => /[\w]+/,
 
 
-    TRIPLEQUOTEDSTRING: (_) => /'''.*?'''/,
-    DOUBLEQUOTEDSTRING: (_) => seq('"', repeat(/[^\"]/), '"'),
-    SINGLEQUOTEDSTRING: (_) => seq('\'', repeat(/[^\']/), '\''),
+    _triple_quoted_string: (_) => prec(1, seq(
+      '\'\'\'',
+      repeat(/[^\']/),
+      '\'\'\'',
+    )),
+    _double_quoted_string: ($) => seq(
+      '"',
+      repeat(choice(
+        /[^\"]/,
+        $.escape_sequence,
+      )),
+      '"',
+    ),
+    _single_quoted_string: (_) => seq('\'', repeat(/[^\']/), '\''),
     string: ($) => choice(
-      $.DOUBLEQUOTEDSTRING,
-      $.SINGLEQUOTEDSTRING,
-      $.TRIPLEQUOTEDSTRING,
-      $.formatstring,
+      $._double_quoted_string,
+      $._single_quoted_string,
+      $._triple_quoted_string,
+      $._formatstring,
       // $.identifier,
     ),
 
+    // Use the same escape sequences as Python
+    escape_sequence: (_) => token.immediate(prec(1, seq(
+      '\\',
+      choice(
+        /u[a-fA-F\d]{4}/,
+        /U[a-fA-F\d]{8}/,
+        /x[a-fA-F\d]{2}/,
+        /\d{3}/,
+        /\r?\n/,
+        /['"abfrntv\\]/,
+        /N\{[^}]+\}/,
+      ),
+    ))),
+
     interpolation: ($) => seq(
       '{',
-      /\w+/,
+      field('expression', choice(
+        $.identifier,
+        $._expression,
+      )),
       '}',
     ),
 
-    formatstring: ($) => seq(
+    _formatstring: ($) => seq(
       '`',
       repeat(
         choice(
@@ -244,6 +278,14 @@ module.exports = grammar({
     finiblock: ($) => seq('fini', $.block),
     // https://synapse.docs.vertex.link/en/latest/synapse/userguides/storm_adv_control.html#empty-block
     emptyblock: ($) => seq('empty', $.block),
+
+    spin_statement: (_) => 'spin',
+    yield_statement: ($) => seq('yield', $._expression),
+    divert_statement: ($) => seq(
+      'divert',
+      field('cond', $._expression),
+      field('genr', $._expression),
+    ),
 
     // https://synapse.docs.vertex.link/en/latest/synapse/userguides/storm_adv_control.html#if-else-statement
     // if_statement: ($) => seq(
